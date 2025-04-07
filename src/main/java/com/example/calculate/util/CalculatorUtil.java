@@ -11,7 +11,7 @@ import java.util.List;
 @Component
 public class CalculatorUtil {
 
-    // Каникулы без указания года
+    // Праздничные дни
     private final List<MonthDay> publicHolidays = List.of(
             // Новогодние каникулы
             MonthDay.of(1, 1),
