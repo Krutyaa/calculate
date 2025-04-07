@@ -5,37 +5,38 @@ import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.MonthDay;
 import java.util.List;
 
 @Component
 public class CalculatorUtil {
 
-    // Каникулы
-    private final List<LocalDate> publicHolidays = List.of(
+    // Каникулы без указания года
+    private final List<MonthDay> publicHolidays = List.of(
             // Новогодние каникулы
-            LocalDate.of(2024, 1, 1),
-            LocalDate.of(2024, 1, 2),
-            LocalDate.of(2024, 1, 3),
-            LocalDate.of(2024, 1, 4),
-            LocalDate.of(2024, 1, 5),
-            LocalDate.of(2024, 1, 6),
+            MonthDay.of(1, 1),
+            MonthDay.of(1, 2),
+            MonthDay.of(1, 3),
+            MonthDay.of(1, 4),
+            MonthDay.of(1, 5),
+            MonthDay.of(1, 6),
             // Рождество Христово
-            LocalDate.of(2024, 1, 7),
-            LocalDate.of(2024, 1, 8),
+            MonthDay.of(1, 7),
+            MonthDay.of(1, 8),
             // День защитника Отечества
-            LocalDate.of(2024, 2, 23),
+            MonthDay.of(2, 23),
             // Международный женский день
-            LocalDate.of(2024, 3, 8),
+            MonthDay.of(3, 8),
             // Праздник Весны и Труда
-            LocalDate.of(2024, 5, 1),
+            MonthDay.of(5, 1),
             // День Победы
-            LocalDate.of(2024, 5, 9),
+            MonthDay.of(5, 9),
             // День России
-            LocalDate.of(2024, 6, 12),
+            MonthDay.of(6, 12),
             // День программиста
-            LocalDate.of(2024, 9, 12),
+            MonthDay.of(9, 12),
             // День народного единства
-            LocalDate.of(2024, 11, 4)
+            MonthDay.of(11, 4)
     );
 
     @Value("${workDaysInMonth}")
@@ -46,34 +47,27 @@ public class CalculatorUtil {
         return (averageSalary / workDaysInMonth) * vacationDays;
     }
 
-    // Расчет суммы отпускных с учетом выходных и отпускных (?)
+    // Расчет отпускных с учетом праздников
     public double calculateVacationPayWithDates(double averageSalary, LocalDate startDate, int vacationDays) {
         int actualVacationDays = 0;
+        double holidayPay = 0;
         LocalDate date = startDate;
 
         while (actualVacationDays < vacationDays) {
-            System.out.println("Checking date: " + date);
-            if (!isWeekend(date) && !isPublicHoliday(date)) {
-                actualVacationDays++;
-                System.out.println("Included: " + date);
+            if (isPublicHoliday(date)) {
+                holidayPay += (averageSalary / workDaysInMonth);
             } else {
-                System.out.println("Excluded: " + date);
+                actualVacationDays++;
             }
             date = date.plusDays(1);
         }
 
-        System.out.println("Total included vacation days: " + actualVacationDays);
-        return (averageSalary / workDaysInMonth) * actualVacationDays;
+        return (averageSalary / workDaysInMonth) * actualVacationDays + holidayPay;
     }
 
-    // Суббота и воскресенье - выходные дни
-    private boolean isWeekend(LocalDate date) {
-        DayOfWeek day = date.getDayOfWeek();
-        return day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY;
-    }
-
-    // Проверка даты на праздниные дни
+    // Проверка на праздничные дни
     private boolean isPublicHoliday(LocalDate date) {
-        return publicHolidays.contains(date);
+        MonthDay monthDay = MonthDay.from(date);
+        return publicHolidays.contains(monthDay);
     }
 }

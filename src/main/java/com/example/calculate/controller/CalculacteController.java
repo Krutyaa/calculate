@@ -19,7 +19,7 @@ public class CalculacteController {
         this.calculatorService = calculatorService;
     }
 
-    @GetMapping("/calculacte")
+    @GetMapping("/calculate")
     public CalculationResponseDTO calculateVacationPay(
             @RequestParam double averageSalary,
             @RequestParam int vacationDays,
